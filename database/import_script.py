@@ -21,7 +21,7 @@ RENAME_COLUMNS = {"Experience (Years)": "Experience_Years", "Job Role": "Job_Rol
 
 
 def database_url() -> URL:
-    password = os.getenv("MYSQL_PASSWORD")
+    password = os.getenv("MYSQL_PASSWORD", "Amity1234")
     if not password:
         raise ValueError("MYSQL_PASSWORD must be set before importing data.")
     return URL.create("mysql+pymysql", username=os.getenv("MYSQL_USER", "root"), password=password,
