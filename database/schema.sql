@@ -6,6 +6,20 @@ COLLATE utf8mb4_0900_ai_ci;
 
 USE resume_screening_db;
 
+CREATE TABLE IF NOT EXISTS users (
+    id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+    name VARCHAR(255) NOT NULL,
+    email VARCHAR(320) NOT NULL,
+    password_hash VARCHAR(255) NOT NULL,
+    role ENUM('candidate', 'recruiter', 'company_admin') NOT NULL,
+    session_token VARCHAR(128) NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (id),
+    UNIQUE KEY uq_users_email (email),
+    UNIQUE KEY uq_users_session_token (session_token),
+    INDEX idx_users_role (role)
+) ENGINE=InnoDB;
+
 CREATE TABLE IF NOT EXISTS historical_candidates (
     Resume_ID INT UNSIGNED NOT NULL, 
     Name VARCHAR(255) NOT NULL,

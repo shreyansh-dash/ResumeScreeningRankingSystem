@@ -4,6 +4,9 @@ from __future__ import annotations
 import os
 import re
 import shutil
+import hashlib
+import hmac
+import secrets
 from collections import Counter
 from datetime import datetime, timezone
 from pathlib import Path
@@ -140,6 +143,129 @@ def profile_from_text(content: str, known_skills: list[str]) -> dict:
         "projects_count": projects
     }
 
+
+
+# ================== AUTHENTICATION ==================
+
+VALID_ROLES = {"candidate", "recruiter", "company_admin"}
+PBKDF2_ITERATIONS = 310_000
+
+
+def hash_password(password: str) -> str:
+    salt = secrets.token_bytes(16)
+    digest = hashlib.pbkdf2_hmac(
+        "sha256", password.encode("utf-8"), salt, PBKDF2_ITERATIONS
+    )
+    return f"pbkdf2_sha256${PBKDF2_ITERATIONS}${salt.hex()}${digest.hex()}"
+
+
+def verify_password(password: str, stored: str) -> bool:
+    try:
+        algorithm, iterations, salt_hex, digest_hex = stored.split("$", 3)
+        if algorithm != "pbkdf2_sha256":
+            return False
+        expected = bytes.fromhex(digest_hex)
+        actual = hashlib.pbkdf2_hmac(
+            "sha256", password.encode("utf-8"), bytes.fromhex(salt_hex), int(iterations)
+        )
+        return hmac.compare_digest(actual, expected)
+    except (ValueError, TypeError):
+        return False
+
+
+def validate_auth_role(role: str) -> str:
+    role = role.strip().lower()
+    if role not in VALID_ROLES:
+        raise HTTPException(400, "Invalid account type.")
+    return role
+
+
+@app.post("/auth/register")
+def register_user(name: str = Form(...), email: str = Form(...), password: str = Form(...), role: str = Form(...)) -> dict:
+    name = name.strip()
+    email = email.strip().lower()
+    role = validate_auth_role(role)
+
+    if not name or len(name) > 255:
+        raise HTTPException(400, "Please enter a valid name.")
+    if not email or len(email) > 320 or "@" not in email:
+        raise HTTPException(400, "Please enter a valid email address.")
+    if len(password) < 8:
+        raise HTTPException(400, "Password must be at least 8 characters.")
+
+    try:
+        with engine.begin() as connection:
+            existing = connection.execute(
+                text("SELECT id FROM users WHERE email=:email LIMIT 1"),
+                {"email": email},
+            ).first()
+            if existing:
+                raise HTTPException(409, "An account with this email already exists.")
+
+            connection.execute(
+                text("""INSERT INTO users (name, email, password_hash, role)
+                       VALUES (:name, :email, :password_hash, :role)"""),
+                {"name": name, "email": email, "password_hash": hash_password(password), "role": role},
+            )
+    except HTTPException:
+        raise
+    except Exception as exc:
+        raise HTTPException(500, f"Could not create account: {exc}") from exc
+
+    return {"message": "Account created successfully. You can now log in."}
+
+
+@app.post("/auth/login")
+def login_user(email: str = Form(...), password: str = Form(...)) -> dict:
+    email = email.strip().lower()
+    if not email or not password:
+        raise HTTPException(400, "Email and password are required.")
+
+    try:
+        with engine.begin() as connection:
+            user = connection.execute(
+                text("SELECT id, name, email, password_hash, role FROM users WHERE email=:email LIMIT 1"),
+                {"email": email},
+            ).mappings().first()
+
+            if not user or not verify_password(password, user["password_hash"]):
+                raise HTTPException(401, "Invalid email or password.")
+
+            token = secrets.token_urlsafe(48)
+            connection.execute(
+                text("UPDATE users SET session_token=:token WHERE id=:id"),
+                {"token": token, "id": user["id"]},
+            )
+
+        return {
+            "token": token,
+            "user": {"id": user["id"], "name": user["name"], "email": user["email"], "role": user["role"]},
+        }
+    except HTTPException:
+        raise
+    except Exception as exc:
+        raise HTTPException(500, f"Could not log in: {exc}") from exc
+
+
+@app.post("/auth/logout")
+def logout_user(token: str = Form(...)) -> dict:
+    with engine.begin() as connection:
+        connection.execute(
+            text("UPDATE users SET session_token=NULL WHERE session_token=:token"),
+            {"token": token},
+        )
+    return {"message": "Logged out."}
+
+
+@app.get("/auth/me")
+def current_user(token: str = Query(...)) -> dict:
+    user = query_rows(
+        "SELECT id, name, email, role FROM users WHERE session_token=:token LIMIT 1",
+        {"token": token},
+    )
+    if not user:
+        raise HTTPException(401, "Session is not valid.")
+    return user[0]
 
 # ================== API ENDPOINTS ==================
 
@@ -592,4 +718,3 @@ def serve_frontend_index():
 # Mount static files (css, js, etc.) under /static to avoid route conflicts
 if FRONTEND_DIR.exists():
     app.mount("/static", StaticFiles(directory=str(FRONTEND_DIR)), name="static")
-

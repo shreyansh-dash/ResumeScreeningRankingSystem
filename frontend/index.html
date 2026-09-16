@@ -1,316 +1,359 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
+<head>
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>AI Resume Screening Dashboard</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
-  </head>
-  <body>
-    <nav class="navbar">
-      <div>
-        <a class="brand" href="#candidates">AI Resume Screening Dashboard</a>
-        <span class="links">
-          <a href="#candidates">Candidates</a>
-          <a href="#analytics">Analytics</a>
-          <a href="#export">Export</a>
-        </span>
-      </div>
-    </nav>
-    <main class="container">
-      <section id="candidates">
-        <h1>Candidate Pool</h1>
-        <div class="filter-section">
-          <div class="filters">
-            <label>Job Role
-              <select id="role">
-                <option value="">All Roles</option>
-              </select>
-            </label>
-            <label>Experience (Years)
-              <select id="experience">
-                <option value="">Any Experience</option>
-                <option value="0-2">0–2 Years</option>
-                <option value="3-5">3–5 Years</option>
-                <option value="6-8">6–8 Years</option>
-                <option value="9-99">9+ Years</option>
-              </select>
-            </label>
-            <label>Salary Expectation
-              <select id="salaryFilter">
-                <option value="">Any Salary</option>
-                <option value="50000-75000">$50k–$75k</option>
-                <option value="75000-100000">$75k–$100k</option>
-                <option value="100000-150000">$100k–$150k</option>
-                <option value="150000-9999999">$150k+</option>
-              </select>
-            </label>
-            <label>AI Score
-              <select id="score">
-                <option value="">Any Score</option>
-                <option value="80">80–100</option>
-                <option value="50">50–79</option>
-                <option value="0">0–49</option>
-              </select>
-            </label>
-            <label>Certifications
-              <select id="certification">
-                <option value="">Any Certification</option>
-                <option value="AWS">AWS</option>
-                <option value="Google">Google ML</option>
-                <option value="Deep Learning">Deep Learning Specialization</option>
-              </select>
-            </label>
-            <label>Recruiter Decision
-              <select id="decision">
-                <option value="">Any Decision</option>
-                <option>Hire</option>
-                <option>Reject</option>
-              </select>
-            </label>
-            <label class="search">Search by Name, Skills, or Certifications
-              <input id="search" type="search" placeholder="Enter search term…">
-            </label>
-          </div>
-          <button id="applyFilters" type="button" class="primary">Apply Filters</button>
-        </div>
-        <div class="table-meta">
-          <strong>Total Candidates: <span id="totalCandidates">0</span></strong>
-          <button id="exportPage" type="button" class="success">Export Selected</button>
-        </div>
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Name</th>
-                <th>Role</th>
-                <th>Experience</th>
-                <th>Education</th>
-                <th>Skills</th>
-                <th>Certifications</th>
-                <th>Projects</th>
-                <th>Salary</th>
-                <th>AI Score</th>
-                <th>Decision</th>
-              </tr>
-            </thead>
-            <tbody id="rows">
-              <tr>
-                <td colspan="11">Loading candidates…</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        <div class="pagination">
-          <button id="previous" type="button">Previous</button>
-          <span id="pageInfo"></span>
-          <button id="next" type="button">Next</button>
-        </div>
-      </section>
-      <section id="analytics">
-        <h2>Analytics &amp; Insights</h2>
-        <div class="chart-grid">
-          <article class="card">
-            <h3>Hire vs Reject Ratio by Role</h3>
-            <div id="hireRatioChart" class="chart-loading">Loading chart data…</div>
-          </article>
-          <article class="card">
-            <h3>Average Salary by Role</h3>
-            <div id="avgSalaryChart" class="chart-loading">Loading chart data…</div>
-          </article>
-          <article class="card">
-            <h3>Top Skills by Role</h3>
-            <div id="topSkillsChart" class="chart-loading">Loading chart data…</div>
-          </article>
-          <article class="card">
-            <h3>AI Score vs Recruiter Decision</h3>
-            <div id="scoreDecisionChart" class="chart-loading">Loading chart data…</div>
-          </article>
-          <article class="card wide-card">
-            <h3>Experience Distribution</h3>
-            <div id="experienceChart" class="chart-loading">Loading chart data…</div>
-          </article>
-        </div>
-      </section>
-      <section id="export">
-        <h2>Export Candidates</h2>
-        <div class="export-grid">
-          <article class="export-card green">
-            <h3>Export All Candidates</h3>
-            <p>Download all 1,000 candidates as a CSV file.</p>
-            <button id="exportAll" type="button">Download All Candidates</button>
-          </article>
-          <article class="export-card cyan">
-            <h3>Export Filtered Results</h3>
-            <p>Export only the candidates matching the current filters.</p>
-            <button id="exportFiltered" type="button">Download Filtered Results</button>
-          </article>
-        </div>
-      </section>
-      <section id="analyzer">
-        <h2>Resume Analyzer</h2>
-        <div class="analyzer-grid">
-          <form id="screenForm" class="card upload">
-            <h3>Upload Resume</h3>
-            <label>Target Job Role
-              <select id="targetRole" required>
-                <option value="">Select Role</option>
-              </select>
-            </label>
-            <label>Expected Salary ($)
-              <input id="salary" type="number" min="0" placeholder="e.g. 80000">
-            </label>
-            <label>Upload Resume
-              <input id="resume" type="file" accept=".pdf,.docx" required>
-              <small id="fileName">Supported formats: PDF, DOCX</small>
-            </label>
-            <button id="submit" type="submit" class="success">Analyze Resume</button>
-          </form>
-          <section id="result" class="card result empty" aria-live="polite">
-            <h3>Analysis Results</h3>
-            <p>Upload a resume to compare it with hired candidates for the selected role.</p>
-          </section>
-        </div>
-      </section>
-    </main>
-    <script src="script.js?v=20260910-analytics-v3"></script>
-    <script>
-      (() => {
-        const q = s => document.querySelector(s),
-          esc = v => String(v ?? '').replace(/[&<>"']/g, c => ({
-            '&': '&amp;',
-            '<': '&lt;',
-            '>': '&gt;',
-            '"': '&quot;',
-            "'": '&#39;'
-          }[c]));
-
-        function params() {
-          const p = new URLSearchParams(),
-            range = (id, min, max) => {
-              const v = q(id).value;
-              if (v) {
-                const a = v.split('-');
-                p.set(min, a[0]);
-                p.set(max, a[1]);
-              }
-            };
-
-          if (q('#role').value) p.set('role', q('#role').value);
-          if (q('#decision').value) p.set('decision', q('#decision').value);
-          if (q('#certification').value) p.set('certification', q('#certification').value);
-          if (q('#search').value) p.set('search', q('#search').value);
-          range('#experience', 'min_experience', 'max_experience');
-          range('#salaryFilter', 'min_salary', 'max_salary');
-          const score = q('#score').value;
-          if (score === '80') p.set('min_score', '80');
-          if (score === '50') {
-            p.set('min_score', '50');
-            p.set('max_score', '79');
-          }
-          if (score === '0') p.set('max_score', '49');
-          return p;
-        }
-
-        function bars(id, labels, sets) {
-          const el = q(id),
-            max = Math.max(1, ...sets.flatMap(s => s.values));
-          el.innerHTML = `
-            <div class="native-legend">
-              ${sets.map(s => `
-                <span>
-                  <i style="background:${s.color}"></i>
-                  ${esc(s.name)}
-                </span>
-              `).join('')}
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div id="authScreen" class="auth-screen">
+        <div class="auth-panel">
+            <div class="auth-heading">
+                <h1>Resume Screening</h1>
+                <p>Sign in to continue.</p>
             </div>
-            <div class="native-bars">
-              ${labels.map((label, i) => `
-                <div class="native-group">
-                  <div class="native-columns">
-                    ${sets.map(s => `
-                      <b title="${esc(s.name)}: ${s.values[i]}" 
-                         style="height:${Math.max(3, s.values[i] / max * 142)}px;
-                                background:${s.color}">
-                      </b>
-                    `).join('')}
-                  </div>
-                  <small>${esc(label)}</small>
+
+            <div class="auth-tabs" role="tablist" aria-label="Authentication">
+                <button type="button" id="loginTab" class="auth-tab active">Login</button>
+                <button type="button" id="registerTab" class="auth-tab">Register</button>
+            </div>
+
+            <form id="loginForm" class="auth-form">
+                <div class="auth-field">
+                    <label for="loginEmail">Email</label>
+                    <input type="email" id="loginEmail" autocomplete="email" required>
                 </div>
-              `).join('')}
+                <div class="auth-field">
+                    <label for="loginPassword">Password</label>
+                    <input type="password" id="loginPassword" autocomplete="current-password" required>
+                </div>
+                <button type="submit" class="primary-btn auth-submit">Login</button>
+            </form>
+
+            <form id="registerForm" class="auth-form hidden">
+                <div class="auth-field">
+                    <label for="registerName">Name</label>
+                    <input type="text" id="registerName" autocomplete="name" maxlength="255" required>
+                </div>
+                <div class="auth-field">
+                    <label for="registerEmail">Email</label>
+                    <input type="email" id="registerEmail" autocomplete="email" required>
+                </div>
+                <div class="auth-field">
+                    <label for="registerPassword">Password</label>
+                    <input type="password" id="registerPassword" autocomplete="new-password" minlength="8" required>
+                </div>
+                <div class="auth-field">
+                    <label for="registerRole">Account type</label>
+                    <select id="registerRole" required>
+                        <option value="">Select account type</option>
+                        <option value="candidate">Candidate</option>
+                        <option value="recruiter">Recruiter</option>
+                        <option value="company_admin">Company Admin</option>
+                    </select>
+                </div>
+                <button type="submit" class="primary-btn auth-submit">Create account</button>
+            </form>
+
+            <div id="authMessage" class="auth-message" role="alert"></div>
+        </div>
+    </div>
+
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="#candidates" class="brand">AI Resume Screening</a>
+            <div class="nav-links">
+                <a href="#candidates">Candidates</a>
+                <a href="#analytics">Analytics</a>
+                <a href="#analyzer">Analyzer</a>
+                <a href="#export">Export</a>
             </div>
-          `;
-        }
+            <div class="nav-user">
+                <span id="currentUser" class="current-user"></span>
+                <button type="button" id="logoutBtn" class="secondary-btn logout-btn">Logout</button>
+            </div>
+        </div>
+    </nav>
 
-        async function render() {
-          try {
-            const r = await fetch('/analytics?' + params()),
-              d = await r.json();
-            if (!r.ok) throw Error(d.detail || r.statusText);
+    <main class="container">
+        <!-- Candidate Pool -->
+        <section id="candidates">
+            <div class="section-heading">
+                <div>
+                    <span class="eyebrow">HISTORICAL DATASET</span>
+                    <h1>Candidate Pool</h1>
+                    <p>Search, filter and rank candidates from the historical screening dataset.</p>
+                </div>
+            </div>
 
-            bars('#hireRatioChart', d.by_role.map(x => x.Job_Role), [
-              {
-                name: 'Hired',
-                values: d.by_role.map(x => x.hires),
-                color: '#28c87b'
-              },
-              {
-                name: 'Rejected',
-                values: d.by_role.map(x => x.candidates - x.hires),
-                color: '#e74c3c'
-              }
-            ]);
+            <div class="filter-panel">
+                <div class="filters">
+                    <div class="filter-group">
+                        <label for="role">Job Role</label>
+                        <select id="role" class="filter-select">
+                            <option value="">All Roles</option>
+                        </select>
+                    </div>
 
-            bars('#avgSalaryChart', d.salaries.map(x => x.Job_Role), [
-              {
-                name: 'Average salary ($)',
-                values: d.salaries.map(x => x.average_salary),
-                color: '#3498db'
-              }
-            ]);
+                    <div class="filter-group">
+                        <label for="experience">Experience</label>
+                        <select id="experience" class="filter-select">
+                            <option value="">Any Experience</option>
+                            <option value="0-2">0–2 Years</option>
+                            <option value="3-5">3–5 Years</option>
+                            <option value="6-8">6–8 Years</option>
+                            <option value="9-99">9+ Years</option>
+                        </select>
+                    </div>
 
-            const skills = d.skills.slice(0, 8);
-            bars('#topSkillsChart', skills.map(x => x.Skill), [
-              {
-                name: 'Hired candidates',
-                values: skills.map(x => x.frequency),
-                color: '#087dff'
-              }
-            ]);
+                    <div class="filter-group">
+                        <label for="salaryFilter">Salary Range</label>
+                        <select id="salaryFilter" class="filter-select">
+                            <option value="">Any Salary</option>
+                            <option value="50000-75000">$50k–$75k</option>
+                            <option value="75000-100000">$75k–$100k</option>
+                            <option value="100000-150000">$100k–$150k</option>
+                            <option value="150000-9999999">$150k+</option>
+                        </select>
+                    </div>
 
-            bars('#scoreDecisionChart', d.score_decisions.map(x => x.score_band), [
-              {
-                name: 'Hire',
-                values: d.score_decisions.map(x => x.hires),
-                color: '#28c87b'
-              },
-              {
-                name: 'Reject',
-                values: d.score_decisions.map(x => x.rejects),
-                color: '#f39c12'
-              }
-            ]);
+                    <div class="filter-group">
+                        <label for="score">AI Score</label>
+                        <select id="score" class="filter-select">
+                            <option value="">Any Score</option>
+                            <option value="80">80–100</option>
+                            <option value="50">50–79</option>
+                            <option value="0">0–49</option>
+                        </select>
+                    </div>
 
-            bars('#experienceChart', d.experience.map(x => x.Experience_Years), [
-              {
-                name: 'Candidates',
-                values: d.experience.map(x => x.candidates),
-                color: '#3498db'
-              }
-            ]);
-          } catch (e) {
-            document.querySelectorAll('.chart-loading,.native-visual').forEach(
-              el => el.textContent = 'Chart data unavailable: ' + e.message
-            );
-          }
-        }
+                    <div class="filter-group">
+                        <label for="decision">Recruiter Decision</label>
+                        <select id="decision" class="filter-select">
+                            <option value="">Any Decision</option>
+                            <option value="Hire">Hire</option>
+                            <option value="Reject">Reject</option>
+                        </select>
+                    </div>
+                </div>
 
-        q('#applyFilters').addEventListener('click', render);
-        render();
-      })()
-    </script>
-  </body>
+                <div class="search-box">
+                    <div class="search-input-wrap">
+                        <span class="search-icon">⌕</span>
+                        <input type="text" id="search" placeholder="Search by name, role, skills, or certifications...">
+                    </div>
+                    <button id="applyFilters" class="primary-btn">Apply Filters</button>
+                </div>
+            </div>
+
+            <div class="table-controls">
+                <div class="total-count">
+                    <span class="muted-label">RESULTS</span>
+                    <strong id="totalCandidates">0</strong>
+                    <span>candidates</span>
+                </div>
+                <div class="export-controls">
+                    <button id="exportFiltered" class="secondary-btn">Export Filtered</button>
+                    <button id="exportAll" class="secondary-btn">Export All</button>
+                </div>
+            </div>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Role</th>
+                            <th>Experience</th>
+                            <th>Education</th>
+                            <th>Skills</th>
+                            <th>Projects</th>
+                            <th>Salary</th>
+                            <th>AI Score</th>
+                            <th>Decision</th>
+                        </tr>
+                    </thead>
+                    <tbody id="rows">
+                        <tr><td colspan="10" class="loading">Loading candidates...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="pagination">
+                <button id="previous" class="secondary-btn" disabled>← Previous</button>
+                <span id="pageInfo">Page 1 of 1</span>
+                <button id="next" class="secondary-btn" disabled>Next →</button>
+            </div>
+        </section>
+
+        <!-- Analytics -->
+        <section id="analytics">
+            <div class="section-heading">
+                <div>
+                    <span class="eyebrow">DATA INSIGHTS</span>
+                    <h2>Analytics & Insights</h2>
+                    <p>Understand hiring patterns, compensation and candidate distribution.</p>
+                </div>
+            </div>
+
+            <div class="analytics-summary">
+                <div class="summary-card">
+                    <span>Total Candidates</span>
+                    <strong id="analyticsCandidates">0</strong>
+                </div>
+                <div class="summary-card hire-summary">
+                    <span>Hires</span>
+                    <strong id="analyticsHires">0</strong>
+                </div>
+                <div class="summary-card reject-summary">
+                    <span>Rejects</span>
+                    <strong id="analyticsRejects">0</strong>
+                </div>
+            </div>
+
+            <div class="analytics-grid">
+                <div class="chart-card">
+                    <div class="chart-title-row">
+                        <div>
+                            <h3>Hire Rate by Role</h3>
+                            <p>Historical hiring outcomes by job role.</p>
+                        </div>
+                    </div>
+                    <div id="hireRatioChart" class="chart">Loading chart data...</div>
+                </div>
+
+                <div class="chart-card">
+                    <div class="chart-title-row">
+                        <div>
+                            <h3>Average Salary by Role</h3>
+                            <p>Average salary expectation in the dataset.</p>
+                        </div>
+                    </div>
+                    <div id="avgSalaryChart" class="chart">Loading chart data...</div>
+                </div>
+
+                <div class="chart-card full-width">
+                    <div class="chart-title-row">
+                        <div>
+                            <h3>Top Skills by Role</h3>
+                            <p>Most frequently occurring skills among candidates.</p>
+                        </div>
+                    </div>
+                    <div id="topSkillsChart" class="chart">Loading chart data...</div>
+                </div>
+
+                <div class="chart-card">
+                    <div class="chart-title-row">
+                        <div>
+                            <h3>AI Score Distribution</h3>
+                            <p>Candidate distribution across score bands.</p>
+                        </div>
+                    </div>
+                    <div id="scoreDecisionChart" class="chart">Loading chart data...</div>
+                </div>
+
+                <div class="chart-card">
+                    <div class="chart-title-row">
+                        <div>
+                            <h3>Experience Distribution</h3>
+                            <p>Number of candidates at each experience level.</p>
+                        </div>
+                    </div>
+                    <div id="experienceChart" class="chart">Loading chart data...</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Resume Analyzer -->
+        <section id="analyzer">
+            <div class="section-heading">
+                <div>
+                    <span class="eyebrow">LIVE SCREENING</span>
+                    <h2>Resume Analyzer</h2>
+                    <p>Upload a resume and compare it against historical hires for the selected role.</p>
+                </div>
+            </div>
+
+            <div class="analyzer-container">
+                <div class="upload-card">
+                    <form id="screenForm">
+                        <div class="form-group">
+                            <label for="targetRole">Target Job Role</label>
+                            <select id="targetRole" required>
+                                <option value="">Select Role</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="salary">Expected Salary <span class="optional">(optional)</span></label>
+                            <div class="input-prefix">
+                                <span>$</span>
+                                <input type="number" id="salary" placeholder="80000" min="0">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Resume</label>
+                            <div id="uploadDropzone" class="upload-dropzone">
+                                <input type="file" id="resume" accept=".pdf,.docx" required>
+                                <label for="resume" class="upload-label">
+                                    <span class="upload-icon">↑</span>
+                                    <strong>Choose a resume</strong>
+                                    <span>or drag & drop it here</span>
+                                    <small>PDF or DOCX · Max file size depends on your server configuration</small>
+                                </label>
+                            </div>
+                            <div id="fileName" class="file-name">No file chosen</div>
+                        </div>
+
+                        <button type="submit" id="submitBtn" class="primary-btn analyze-btn">Analyze Resume</button>
+                    </form>
+                </div>
+
+                <div class="result-card">
+                    <div class="result-card-header">
+                        <div>
+                            <span class="eyebrow">SCREENING OUTPUT</span>
+                            <h3>Analysis Results</h3>
+                        </div>
+                    </div>
+                    <div id="result">
+                        <div class="result-placeholder">
+                            <div class="placeholder-icon">◎</div>
+                            <strong>Your result will appear here</strong>
+                            <p>Upload a resume, choose a role and run the screening model.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Export -->
+        <section id="export">
+            <div class="section-heading">
+                <div>
+                    <span class="eyebrow">DATA EXPORT</span>
+                    <h2>Export Options</h2>
+                </div>
+            </div>
+            <div class="export-options">
+                <div class="export-option">
+                    <h3>Filtered Dataset</h3>
+                    <p>Export candidates matching your current filters.</p>
+                    <button id="exportFiltered2" class="secondary-btn">Download CSV</button>
+                </div>
+                <div class="export-option">
+                    <h3>Complete Dataset</h3>
+                    <p>Export the complete historical candidate dataset.</p>
+                    <button id="exportAll2" class="secondary-btn">Download Full CSV</button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="/static/script.js"></script>
+</body>
 </html>
