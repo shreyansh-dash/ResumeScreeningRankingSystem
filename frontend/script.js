@@ -1,9 +1,5 @@
 console.log('🚀 Resume Screening Dashboard Loaded');
 
-// ============================================================
-// CONFIGURATION
-// ============================================================
-
 const API_BASE =
     window.location.port === '8000'
         ? ''
@@ -14,14 +10,8 @@ console.log(
     API_BASE || window.location.origin
 );
 
-
-// ============================================================
-// UTILITIES
-// ============================================================
-
 const $ = (selector) =>
     document.querySelector(selector);
-
 
 const escapeHTML = (text) => {
 
@@ -44,7 +34,6 @@ const escapeHTML = (text) => {
     );
 };
 
-
 function getFilterValue(id) {
 
     const element =
@@ -55,18 +44,12 @@ function getFilterValue(id) {
         : '';
 }
 
-
-// ============================================================
-// FILTER PARAMETER BUILDER
-// ============================================================
-
 function buildFilterParams(
     includePagination = true
 ) {
 
     const params =
         new URLSearchParams();
-
 
     if (includePagination) {
 
@@ -91,7 +74,6 @@ function buildFilterParams(
         );
     }
 
-
     const role =
         getFilterValue('role');
 
@@ -113,11 +95,6 @@ function buildFilterParams(
     const score =
         getFilterValue('score');
 
-
-    // --------------------------------------------------------
-    // Basic filters
-    // --------------------------------------------------------
-
     if (role) {
 
         params.set(
@@ -125,7 +102,6 @@ function buildFilterParams(
             role
         );
     }
-
 
     if (decision) {
 
@@ -135,7 +111,6 @@ function buildFilterParams(
         );
     }
 
-
     if (certification) {
 
         params.set(
@@ -143,7 +118,6 @@ function buildFilterParams(
             certification
         );
     }
-
 
     if (search) {
 
@@ -153,18 +127,12 @@ function buildFilterParams(
         );
     }
 
-
-    // --------------------------------------------------------
-    // Experience
-    // --------------------------------------------------------
-
     if (experience) {
 
         const [min, max] =
             experience
                 .split('-')
                 .map(Number);
-
 
         if (!Number.isNaN(min)) {
 
@@ -173,7 +141,6 @@ function buildFilterParams(
                 min
             );
         }
-
 
         if (!Number.isNaN(max)) {
 
@@ -184,18 +151,12 @@ function buildFilterParams(
         }
     }
 
-
-    // --------------------------------------------------------
-    // Salary
-    // --------------------------------------------------------
-
     if (salaryFilter) {
 
         const [min, max] =
             salaryFilter
                 .split('-')
                 .map(Number);
-
 
         if (!Number.isNaN(min)) {
 
@@ -204,7 +165,6 @@ function buildFilterParams(
                 min
             );
         }
-
 
         if (!Number.isNaN(max)) {
 
@@ -215,16 +175,10 @@ function buildFilterParams(
         }
     }
 
-
-    // --------------------------------------------------------
-    // AI Score
-    // --------------------------------------------------------
-
     if (score !== '') {
 
         const minScore =
             Number(score);
-
 
         if (!Number.isNaN(minScore)) {
 
@@ -232,7 +186,6 @@ function buildFilterParams(
                 'min_score',
                 minScore
             );
-
 
             if (minScore === 80) {
 
@@ -258,14 +211,8 @@ function buildFilterParams(
         }
     }
 
-
     return params;
 }
-
-
-// ============================================================
-// API HELPER
-// ============================================================
 
 async function apiCall(
     endpoint,
@@ -275,11 +222,9 @@ async function apiCall(
     const url =
         API_BASE + endpoint;
 
-
     console.log(
         `📤 Calling API: ${url}`
     );
-
 
     try {
 
@@ -298,19 +243,16 @@ async function apiCall(
                 }
             );
 
-
         if (!response.ok) {
 
             let message =
                 response.statusText ||
                 `HTTP ${response.status}`;
 
-
             try {
 
                 const error =
                     await response.json();
-
 
                 if (error.detail) {
 
@@ -319,16 +261,12 @@ async function apiCall(
                 }
 
             } catch (_) {
-
-                // Server did not return JSON.
             }
-
 
             throw new Error(
                 message
             );
         }
-
 
         return await response.json();
 
@@ -343,30 +281,15 @@ async function apiCall(
     }
 }
 
-
-// ============================================================
-// GLOBAL STATE
-// ============================================================
-
 let currentPage = 1;
 let totalPages = 1;
 let totalCandidates = 0;
-
-
-// ============================================================
-// AUTHENTICATION
-// ============================================================
 
 const AUTH_TOKEN_KEY =
     'resume_screening_auth_token';
 
 const AUTH_USER_KEY =
     'resume_screening_auth_user';
-
-
-// ------------------------------------------------------------
-// Authentication state
-// ------------------------------------------------------------
 
 function setAuthState(
     token,
@@ -378,7 +301,6 @@ function setAuthState(
         token
     );
 
-
     localStorage.setItem(
         AUTH_USER_KEY,
         JSON.stringify(
@@ -386,7 +308,6 @@ function setAuthState(
         )
     );
 }
-
 
 function clearAuthState() {
 
@@ -399,14 +320,12 @@ function clearAuthState() {
     );
 }
 
-
 function getAuthToken() {
 
     return localStorage.getItem(
         AUTH_TOKEN_KEY
     );
 }
-
 
 function getStoredUser() {
 
@@ -424,11 +343,6 @@ function getStoredUser() {
     }
 }
 
-
-// ------------------------------------------------------------
-// Authentication message
-// ------------------------------------------------------------
-
 function showAuthMessage(
     message,
     success = false
@@ -437,27 +351,19 @@ function showAuthMessage(
     const element =
         $('#authMessage');
 
-
     if (!element) {
 
         return;
     }
 
-
     element.textContent =
         message || '';
-
 
     element.classList.toggle(
         'success',
         success
     );
 }
-
-
-// ------------------------------------------------------------
-// Show Login form
-// ------------------------------------------------------------
 
 function showLoginForm() {
 
@@ -473,14 +379,12 @@ function showLoginForm() {
     const registerTab =
         $('#registerTab');
 
-
     if (loginForm) {
 
         loginForm.classList.remove(
             'hidden'
         );
     }
-
 
     if (registerForm) {
 
@@ -489,14 +393,12 @@ function showLoginForm() {
         );
     }
 
-
     if (loginTab) {
 
         loginTab.classList.add(
             'active'
         );
     }
-
 
     if (registerTab) {
 
@@ -505,14 +407,8 @@ function showLoginForm() {
         );
     }
 
-
     showAuthMessage('');
 }
-
-
-// ------------------------------------------------------------
-// Show Register form
-// ------------------------------------------------------------
 
 function showRegisterForm() {
 
@@ -528,14 +424,12 @@ function showRegisterForm() {
     const registerTab =
         $('#registerTab');
 
-
     if (loginForm) {
 
         loginForm.classList.add(
             'hidden'
         );
     }
-
 
     if (registerForm) {
 
@@ -544,14 +438,12 @@ function showRegisterForm() {
         );
     }
 
-
     if (loginTab) {
 
         loginTab.classList.remove(
             'active'
         );
     }
-
 
     if (registerTab) {
 
@@ -560,14 +452,8 @@ function showRegisterForm() {
         );
     }
 
-
     showAuthMessage('');
 }
-
-
-// ------------------------------------------------------------
-// Show dashboard
-// ------------------------------------------------------------
 
 function showDashboard(user) {
 
@@ -575,10 +461,8 @@ function showDashboard(user) {
         'authenticated'
     );
 
-
     const currentUser =
         $('#currentUser');
-
 
     if (
         currentUser &&
@@ -597,7 +481,6 @@ function showDashboard(user) {
                 'Company Admin'
         };
 
-
         currentUser.textContent =
             `${user.name || user.email} · ${
                 roleLabels[user.role] ||
@@ -606,10 +489,8 @@ function showDashboard(user) {
             }`;
     }
 
-
     const authScreen =
         $('#authScreen');
-
 
     if (authScreen) {
 
@@ -618,21 +499,14 @@ function showDashboard(user) {
     }
 }
 
-
-// ------------------------------------------------------------
-// Show authentication screen
-// ------------------------------------------------------------
-
 function showAuthScreen() {
 
     document.body.classList.remove(
         'authenticated'
     );
 
-
     const authScreen =
         $('#authScreen');
-
 
     if (authScreen) {
 
@@ -640,14 +514,8 @@ function showAuthScreen() {
             'flex';
     }
 
-
     showLoginForm();
 }
-
-
-// ============================================================
-// SETUP AUTHENTICATION
-// ============================================================
 
 function setupAuthentication() {
 
@@ -666,11 +534,6 @@ function setupAuthentication() {
     const logoutBtn =
         $('#logoutBtn');
 
-
-    // --------------------------------------------------------
-    // LOGIN TAB
-    // --------------------------------------------------------
-
     if (loginTab) {
 
         loginTab.addEventListener(
@@ -683,11 +546,6 @@ function setupAuthentication() {
             }
         );
     }
-
-
-    // --------------------------------------------------------
-    // REGISTER TAB
-    // --------------------------------------------------------
 
     if (registerTab) {
 
@@ -702,11 +560,6 @@ function setupAuthentication() {
         );
     }
 
-
-    // --------------------------------------------------------
-    // LOGIN FORM
-    // --------------------------------------------------------
-
     if (loginForm) {
 
         loginForm.addEventListener(
@@ -715,17 +568,14 @@ function setupAuthentication() {
 
                 event.preventDefault();
 
-
                 const email =
                     $('#loginEmail')
                         ?.value
                         .trim() || '';
 
-
                 const password =
                     $('#loginPassword')
                         ?.value || '';
-
 
                 if (
                     !email ||
@@ -739,18 +589,15 @@ function setupAuthentication() {
                     return;
                 }
 
-
                 const submitButton =
                     loginForm.querySelector(
                         'button[type="submit"]'
                     );
 
-
                 const originalText =
                     submitButton
                         ?.textContent ||
                     'Login';
-
 
                 if (submitButton) {
 
@@ -761,27 +608,22 @@ function setupAuthentication() {
                         'Logging in...';
                 }
 
-
                 showAuthMessage('');
-
 
                 try {
 
                     const formData =
                         new FormData();
 
-
                     formData.append(
                         'email',
                         email
                     );
 
-
                     formData.append(
                         'password',
                         password
                     );
-
 
                     const result =
                         await apiCall(
@@ -791,7 +633,6 @@ function setupAuthentication() {
                                 body: formData
                             }
                         );
-
 
                     if (
                         !result ||
@@ -804,20 +645,16 @@ function setupAuthentication() {
                         );
                     }
 
-
                     setAuthState(
                         result.token,
                         result.user
                     );
 
-
                     showDashboard(
                         result.user
                     );
 
-
                     loginForm.reset();
-
 
                     await initializeDashboard();
 
@@ -827,7 +664,6 @@ function setupAuthentication() {
                         '❌ Login failed:',
                         error
                     );
-
 
                     showAuthMessage(
                         error.message ||
@@ -849,11 +685,6 @@ function setupAuthentication() {
         );
     }
 
-
-    // --------------------------------------------------------
-    // REGISTER FORM
-    // --------------------------------------------------------
-
     if (registerForm) {
 
         registerForm.addEventListener(
@@ -862,28 +693,23 @@ function setupAuthentication() {
 
                 event.preventDefault();
 
-
                 const name =
                     $('#registerName')
                         ?.value
                         .trim() || '';
-
 
                 const email =
                     $('#registerEmail')
                         ?.value
                         .trim() || '';
 
-
                 const password =
                     $('#registerPassword')
                         ?.value || '';
 
-
                 const role =
                     $('#registerRole')
                         ?.value || '';
-
 
                 if (
                     !name ||
@@ -899,7 +725,6 @@ function setupAuthentication() {
                     return;
                 }
 
-
                 if (
                     password.length < 8
                 ) {
@@ -911,18 +736,15 @@ function setupAuthentication() {
                     return;
                 }
 
-
                 const submitButton =
                     registerForm.querySelector(
                         'button[type="submit"]'
                     );
 
-
                 const originalText =
                     submitButton
                         ?.textContent ||
                     'Create account';
-
 
                 if (submitButton) {
 
@@ -933,39 +755,32 @@ function setupAuthentication() {
                         'Creating account...';
                 }
 
-
                 showAuthMessage('');
-
 
                 try {
 
                     const formData =
                         new FormData();
 
-
                     formData.append(
                         'name',
                         name
                     );
-
 
                     formData.append(
                         'email',
                         email
                     );
 
-
                     formData.append(
                         'password',
                         password
                     );
 
-
                     formData.append(
                         'role',
                         role
                     );
-
 
                     await apiCall(
                         '/auth/register',
@@ -975,23 +790,12 @@ function setupAuthentication() {
                         }
                     );
 
-
-                    /*
-                     * Registration succeeded.
-                     *
-                     * Do not automatically log the user in.
-                     * Return to Login and fill the email field.
-                     */
-
                     registerForm.reset();
-
 
                     showLoginForm();
 
-
                     const loginEmail =
                         $('#loginEmail');
-
 
                     if (loginEmail) {
 
@@ -1000,7 +804,6 @@ function setupAuthentication() {
 
                         loginEmail.focus();
                     }
-
 
                     showAuthMessage(
                         'Account created successfully. You can now log in.',
@@ -1013,7 +816,6 @@ function setupAuthentication() {
                         '❌ Registration failed:',
                         error
                     );
-
 
                     showAuthMessage(
                         error.message ||
@@ -1035,11 +837,6 @@ function setupAuthentication() {
         );
     }
 
-
-    // --------------------------------------------------------
-    // LOGOUT
-    // --------------------------------------------------------
-
     if (logoutBtn) {
 
         logoutBtn.addEventListener(
@@ -1049,7 +846,6 @@ function setupAuthentication() {
                 const token =
                     getAuthToken();
 
-
                 try {
 
                     if (token) {
@@ -1057,12 +853,10 @@ function setupAuthentication() {
                         const formData =
                             new FormData();
 
-
                         formData.append(
                             'token',
                             token
                         );
-
 
                         await apiCall(
                             '/auth/logout',
@@ -1091,34 +885,24 @@ function setupAuthentication() {
     }
 }
 
-
-// ============================================================
-// INITIALIZE DASHBOARD
-// ============================================================
-
 async function initializeDashboard() {
 
     console.log(
         '🚀 Initializing dashboard...'
     );
 
-
     try {
 
         await loadRoles();
-
 
         await Promise.all([
             loadCandidates(),
             loadAnalytics()
         ]);
 
-
         setupEventListeners();
 
-
         setupFormSubmission();
-
 
         console.log(
             '🎉 Dashboard is ready'
@@ -1131,10 +915,8 @@ async function initializeDashboard() {
             error
         );
 
-
         const rows =
             $('#rows');
-
 
         if (rows) {
 
@@ -1154,16 +936,10 @@ async function initializeDashboard() {
     }
 }
 
-
-// ============================================================
-// CHECK EXISTING LOGIN SESSION
-// ============================================================
-
 async function checkAuthentication() {
 
     const token =
         getAuthToken();
-
 
     if (!token) {
 
@@ -1171,7 +947,6 @@ async function checkAuthentication() {
 
         return;
     }
-
 
     try {
 
@@ -1181,17 +956,14 @@ async function checkAuthentication() {
                 encodeURIComponent(token)
             );
 
-
         localStorage.setItem(
             AUTH_USER_KEY,
             JSON.stringify(user)
         );
 
-
         showDashboard(
             user
         );
-
 
         await initializeDashboard();
 
@@ -1201,23 +973,16 @@ async function checkAuthentication() {
             'Stored session is invalid. Showing login screen.'
         );
 
-
         clearAuthState();
 
         showAuthScreen();
     }
 }
 
-
-// ============================================================
-// RESUME UPLOAD / SCREENING
-// ============================================================
-
 function setupFormSubmission() {
 
     const form =
         $('#screenForm');
-
 
     if (!form) {
 
@@ -1228,66 +993,50 @@ function setupFormSubmission() {
         return;
     }
 
-
     form.addEventListener(
         'submit',
         async (event) => {
 
             event.preventDefault();
 
-
             console.log(
                 '🔥🔥🔥 RESUME FORM SUBMITTED 🔥🔥🔥'
             );
 
-
             const fileInput =
                 $('#resume');
-
 
             console.log(
                 '📄 File input:',
                 fileInput
             );
 
-
             console.log(
                 '📁 Selected file:',
                 fileInput?.files?.[0]
             );
-
 
             console.log(
                 '🎯 Target role:',
                 $('#targetRole')?.value
             );
 
-
             const file =
                 fileInput?.files?.[0];
-
 
             const targetRole =
                 $('#targetRole')?.value ||
                 '';
 
-
             const salary =
                 $('#salary')?.value ||
                 '';
 
-
             const resultDiv =
                 $('#result');
 
-
             const submitBtn =
                 $('#submitBtn');
-
-
-            // ------------------------------------------------
-            // Validate file
-            // ------------------------------------------------
 
             if (!file) {
 
@@ -1298,13 +1047,11 @@ function setupFormSubmission() {
                 return;
             }
 
-
             const extension =
                 file.name
                     .toLowerCase()
                     .split('.')
                     .pop();
-
 
             if (
                 !['pdf', 'docx']
@@ -1318,11 +1065,6 @@ function setupFormSubmission() {
                 return;
             }
 
-
-            // ------------------------------------------------
-            // Validate role
-            // ------------------------------------------------
-
             if (!targetRole) {
 
                 showUploadError(
@@ -1332,26 +1074,18 @@ function setupFormSubmission() {
                 return;
             }
 
-
-            // ------------------------------------------------
-            // Build FormData
-            // ------------------------------------------------
-
             const formData =
                 new FormData();
-
 
             formData.append(
                 'file',
                 file
             );
 
-
             formData.append(
                 'target_role',
                 targetRole
             );
-
 
             if (
                 salary !== '' &&
@@ -1366,16 +1100,10 @@ function setupFormSubmission() {
                 );
             }
 
-
-            // ------------------------------------------------
-            // Loading state
-            // ------------------------------------------------
-
             const originalText =
                 submitBtn
                     ? submitBtn.textContent
                     : 'Analyze Resume';
-
 
             if (submitBtn) {
 
@@ -1385,7 +1113,6 @@ function setupFormSubmission() {
                 submitBtn.textContent =
                     'Analyzing Resume...';
             }
-
 
             if (resultDiv) {
 
@@ -1407,11 +1134,6 @@ function setupFormSubmission() {
                 `;
             }
 
-
-            // ------------------------------------------------
-            // API request
-            // ------------------------------------------------
-
             try {
 
                 console.log(
@@ -1419,12 +1141,10 @@ function setupFormSubmission() {
                     file.name
                 );
 
-
                 console.log(
                     '🎯 Target role:',
                     targetRole
                 );
-
 
                 const result =
                     await apiCall(
@@ -1435,12 +1155,10 @@ function setupFormSubmission() {
                         }
                     );
 
-
                 console.log(
                     '✅ Analysis result:',
                     result
                 );
-
 
                 displayAnalysisResult(
                     result
@@ -1452,7 +1170,6 @@ function setupFormSubmission() {
                     '❌ Analysis failed:',
                     error
                 );
-
 
                 showUploadError(
                     error.message ||
@@ -1473,22 +1190,14 @@ function setupFormSubmission() {
         }
     );
 
-
-    // ========================================================
-    // FILE INPUT
-    // ========================================================
-
     const resumeInput =
         $('#resume');
-
 
     const fileName =
         $('#fileName');
 
-
     const uploadDropzone =
         $('#uploadDropzone');
-
 
     if (resumeInput) {
 
@@ -1499,7 +1208,6 @@ function setupFormSubmission() {
                 const file =
                     resumeInput.files?.[0];
 
-
                 if (fileName) {
 
                     fileName.textContent =
@@ -1507,13 +1215,11 @@ function setupFormSubmission() {
                             ? file.name
                             : 'No file chosen';
 
-
                     fileName.classList.toggle(
                         'has-file',
                         !!file
                     );
                 }
-
 
                 if (uploadDropzone) {
 
@@ -1525,11 +1231,6 @@ function setupFormSubmission() {
             }
         );
     }
-
-
-    // ========================================================
-    // DRAG & DROP
-    // ========================================================
 
     if (uploadDropzone) {
 
@@ -1545,7 +1246,6 @@ function setupFormSubmission() {
 
                         event.preventDefault();
 
-
                         uploadDropzone.classList.add(
                             'dragging'
                         );
@@ -1553,7 +1253,6 @@ function setupFormSubmission() {
                 );
             }
         );
-
 
         [
             'dragleave',
@@ -1567,7 +1266,6 @@ function setupFormSubmission() {
 
                         event.preventDefault();
 
-
                         uploadDropzone.classList.remove(
                             'dragging'
                         );
@@ -1576,14 +1274,12 @@ function setupFormSubmission() {
             }
         );
 
-
         uploadDropzone.addEventListener(
             'drop',
             (event) => {
 
                 const files =
                     event.dataTransfer.files;
-
 
                 if (
                     !files?.length ||
@@ -1593,17 +1289,14 @@ function setupFormSubmission() {
                     return;
                 }
 
-
                 const droppedFile =
                     files[0];
-
 
                 const extension =
                     droppedFile.name
                         .toLowerCase()
                         .split('.')
                         .pop();
-
 
                 if (
                     !['pdf', 'docx']
@@ -1617,21 +1310,17 @@ function setupFormSubmission() {
                     return;
                 }
 
-
                 try {
 
                     const dataTransfer =
                         new DataTransfer();
 
-
                     dataTransfer.items.add(
                         droppedFile
                     );
 
-
                     resumeInput.files =
                         dataTransfer.files;
-
 
                     resumeInput.dispatchEvent(
                         new Event(
@@ -1654,22 +1343,15 @@ function setupFormSubmission() {
     }
 }
 
-
-// ============================================================
-// UPLOAD ERROR
-// ============================================================
-
 function showUploadError(message) {
 
     const resultDiv =
         $('#result');
 
-
     if (!resultDiv) {
 
         return;
     }
-
 
     resultDiv.innerHTML = `
 
@@ -1695,16 +1377,10 @@ function showUploadError(message) {
     `;
 }
 
-
-// ============================================================
-// DISPLAY SCREENING RESULT
-// ============================================================
-
 function displayAnalysisResult(result) {
 
     const resultDiv =
         $('#result');
-
 
     if (
         !result ||
@@ -1718,7 +1394,6 @@ function displayAnalysisResult(result) {
         return;
     }
 
-
     const decisionClass =
         String(
             result.decision || ''
@@ -1729,20 +1404,16 @@ function displayAnalysisResult(result) {
             '-'
         );
 
-
     const matchedSkills =
         result.matched_skills || [];
 
-
     const missingSkills =
         result.missing_skills || [];
-
 
     const score =
         Number(
             result.score
         ) || 0;
-
 
     const safeScore =
         Math.max(
@@ -1753,12 +1424,9 @@ function displayAnalysisResult(result) {
             )
         );
 
-
     resultDiv.innerHTML = `
 
         <div class="analysis-result">
-
-            <!-- HEADER -->
 
             <div class="result-header">
 
@@ -1784,7 +1452,6 @@ function displayAnalysisResult(result) {
 
                 </div>
 
-
                 <span
                     class="decision-badge ${decisionClass}"
                 >
@@ -1795,9 +1462,6 @@ function displayAnalysisResult(result) {
                 </span>
 
             </div>
-
-
-            <!-- SCORE -->
 
             <div class="score-display">
 
@@ -1815,7 +1479,6 @@ function displayAnalysisResult(result) {
 
                 </div>
 
-
                 <div
                     class="score-ring"
                     style="--score:${safeScore}%"
@@ -1823,9 +1486,6 @@ function displayAnalysisResult(result) {
                 </div>
 
             </div>
-
-
-            <!-- BASIC INFORMATION -->
 
             <div class="result-grid">
 
@@ -1849,7 +1509,6 @@ function displayAnalysisResult(result) {
 
                 </div>
 
-
                 <div class="result-item">
 
                     <span class="label">
@@ -1866,7 +1525,6 @@ function displayAnalysisResult(result) {
 
                 </div>
 
-
                 <div class="result-item">
 
                     <span class="label">
@@ -1881,7 +1539,6 @@ function displayAnalysisResult(result) {
                     </strong>
 
                 </div>
-
 
                 <div class="result-item">
 
@@ -1899,9 +1556,6 @@ function displayAnalysisResult(result) {
                 </div>
 
             </div>
-
-
-            <!-- MATCHED SKILLS -->
 
             <div class="skills-section">
 
@@ -1940,9 +1594,6 @@ function displayAnalysisResult(result) {
                 </div>
 
             </div>
-
-
-            <!-- MISSING SKILLS -->
 
             <div
                 class="skills-section missing-skills"
@@ -1984,9 +1635,6 @@ function displayAnalysisResult(result) {
 
             </div>
 
-
-            <!-- RECOMMENDATION -->
-
             <div class="recommendation">
 
                 <h5>
@@ -2005,11 +1653,6 @@ function displayAnalysisResult(result) {
     `;
 }
 
-
-// ============================================================
-// LOAD ROLES
-// ============================================================
-
 async function loadRoles() {
 
     const roles =
@@ -2017,24 +1660,16 @@ async function loadRoles() {
             '/roles'
         );
 
-
     const roleSelect =
         $('#role');
 
-
     const targetRoleSelect =
         $('#targetRole');
-
-
-    // --------------------------------------------------------
-    // Candidate filter
-    // --------------------------------------------------------
 
     if (roleSelect) {
 
         roleSelect.innerHTML =
             '<option value="">All Roles</option>';
-
 
         roles.forEach(
             role => {
@@ -2049,16 +1684,10 @@ async function loadRoles() {
         );
     }
 
-
-    // --------------------------------------------------------
-    // Resume analyzer
-    // --------------------------------------------------------
-
     if (targetRoleSelect) {
 
         targetRoleSelect.innerHTML =
             '<option value="">Select Role</option>';
-
 
         roles.forEach(
             role => {
@@ -2073,16 +1702,10 @@ async function loadRoles() {
         );
     }
 
-
     console.log(
         `✅ Loaded ${roles.length} roles`
     );
 }
-
-
-// ============================================================
-// LOAD CANDIDATES
-// ============================================================
 
 async function loadCandidates() {
 
@@ -2093,19 +1716,16 @@ async function loadCandidates() {
                 true
             );
 
-
         const data =
             await apiCall(
                 '/candidates?' +
                 params.toString()
             );
 
-
         totalCandidates =
             Number(
                 data.total || 0
             );
-
 
         totalPages =
             Math.max(
@@ -2115,10 +1735,8 @@ async function loadCandidates() {
                 )
             );
 
-
         const totalElement =
             $('#totalCandidates');
-
 
         if (totalElement) {
 
@@ -2127,11 +1745,9 @@ async function loadCandidates() {
                     .toLocaleString();
         }
 
-
         renderTable(
             data.items || []
         );
-
 
         updatePagination();
 
@@ -2142,10 +1758,8 @@ async function loadCandidates() {
             error
         );
 
-
         const rowsContainer =
             $('#rows');
-
 
         if (rowsContainer) {
 
@@ -2168,22 +1782,15 @@ async function loadCandidates() {
     }
 }
 
-
-// ============================================================
-// RENDER CANDIDATE TABLE
-// ============================================================
-
 function renderTable(candidates) {
 
     const rowsContainer =
         $('#rows');
 
-
     if (!rowsContainer) {
 
         return;
     }
-
 
     if (!candidates.length) {
 
@@ -2205,7 +1812,6 @@ function renderTable(candidates) {
         return;
     }
 
-
     rowsContainer.innerHTML =
         candidates
             .map(
@@ -2217,16 +1823,13 @@ function renderTable(candidates) {
                             0
                         );
 
-
                     const decision =
                         candidate.Recruiter_Decision ||
                         '';
 
-
                     const skills =
                         candidate.Skills ||
                         '';
-
 
                     return `
 
@@ -2239,7 +1842,6 @@ function renderTable(candidates) {
                                 )}
                             </td>
 
-
                             <td
                                 class="candidate-name"
                             >
@@ -2251,7 +1853,6 @@ function renderTable(candidates) {
 
                             </td>
 
-
                             <td>
 
                                 ${escapeHTML(
@@ -2260,7 +1861,6 @@ function renderTable(candidates) {
                                 )}
 
                             </td>
-
 
                             <td>
 
@@ -2273,7 +1873,6 @@ function renderTable(candidates) {
 
                             </td>
 
-
                             <td>
 
                                 ${escapeHTML(
@@ -2282,7 +1881,6 @@ function renderTable(candidates) {
                                 )}
 
                             </td>
-
 
                             <td
                                 class="skills-cell"
@@ -2298,7 +1896,6 @@ function renderTable(candidates) {
 
                             </td>
 
-
                             <td>
 
                                 ${escapeHTML(
@@ -2308,7 +1905,6 @@ function renderTable(candidates) {
 
                             </td>
 
-
                             <td>
 
                                 $${Number(
@@ -2317,7 +1913,6 @@ function renderTable(candidates) {
                                 ).toLocaleString()}
 
                             </td>
-
 
                             <td>
 
@@ -2330,7 +1925,6 @@ function renderTable(candidates) {
                                 </span>
 
                             </td>
-
 
                             <td>
 
@@ -2357,11 +1951,6 @@ function renderTable(candidates) {
             .join('');
 }
 
-
-// ============================================================
-// SCORE COLOR CLASS
-// ============================================================
-
 function getScoreClass(score) {
 
     if (score >= 80) {
@@ -2369,34 +1958,24 @@ function getScoreClass(score) {
         return 'score-high';
     }
 
-
     if (score >= 50) {
 
         return 'score-medium';
     }
 
-
     return 'score-low';
 }
-
-
-// ============================================================
-// PAGINATION
-// ============================================================
 
 function updatePagination() {
 
     const pageInfo =
         $('#pageInfo');
 
-
     const previous =
         $('#previous');
 
-
     const next =
         $('#next');
-
 
     if (pageInfo) {
 
@@ -2404,13 +1983,11 @@ function updatePagination() {
             `Page ${currentPage} of ${totalPages}`;
     }
 
-
     if (previous) {
 
         previous.disabled =
             currentPage <= 1;
     }
-
 
     if (next) {
 
@@ -2419,15 +1996,9 @@ function updatePagination() {
     }
 }
 
-
-// ============================================================
-// APPLY ALL FILTERS
-// ============================================================
-
 async function applyAllFilters() {
 
     currentPage = 1;
-
 
     await Promise.all([
         loadCandidates(),
@@ -2435,20 +2006,10 @@ async function applyAllFilters() {
     ]);
 }
 
-
-// ============================================================
-// EVENT LISTENERS
-// ============================================================
-
 function setupEventListeners() {
-
-    // --------------------------------------------------------
-    // Apply filters
-    // --------------------------------------------------------
 
     const applyFiltersBtn =
         $('#applyFilters');
-
 
     if (applyFiltersBtn) {
 
@@ -2458,14 +2019,8 @@ function setupEventListeners() {
         );
     }
 
-
-    // --------------------------------------------------------
-    // Previous page
-    // --------------------------------------------------------
-
     const previousBtn =
         $('#previous');
-
 
     if (previousBtn) {
 
@@ -2483,14 +2038,8 @@ function setupEventListeners() {
         );
     }
 
-
-    // --------------------------------------------------------
-    // Next page
-    // --------------------------------------------------------
-
     const nextBtn =
         $('#next');
-
 
     if (nextBtn) {
 
@@ -2511,14 +2060,8 @@ function setupEventListeners() {
         );
     }
 
-
-    // --------------------------------------------------------
-    // Search with Enter
-    // --------------------------------------------------------
-
     const searchInput =
         $('#search');
-
 
     if (searchInput) {
 
@@ -2537,26 +2080,17 @@ function setupEventListeners() {
         );
     }
 
-
-    // --------------------------------------------------------
-    // Export buttons
-    // --------------------------------------------------------
-
     const exportFiltered =
         $('#exportFiltered');
-
 
     const exportFiltered2 =
         $('#exportFiltered2');
 
-
     const exportAll =
         $('#exportAll');
 
-
     const exportAll2 =
         $('#exportAll2');
-
 
     [
         exportFiltered,
@@ -2574,7 +2108,6 @@ function setupEventListeners() {
             }
         }
     );
-
 
     [
         exportAll,
@@ -2594,11 +2127,6 @@ function setupEventListeners() {
     );
 }
 
-
-// ============================================================
-// EXPORT DATA
-// ============================================================
-
 async function exportData(
     all = false
 ) {
@@ -2610,32 +2138,25 @@ async function exportData(
                 false
             );
 
-
         params.set(
             'page',
             1
         );
-
 
         params.set(
             'page_size',
             1000
         );
 
-
         params.set(
             'sort',
             'AI_Score'
         );
 
-
         params.set(
             'direction',
             'desc'
         );
-
-
-        // Full export = remove filters
 
         if (all) {
 
@@ -2656,17 +2177,14 @@ async function exportData(
             );
         }
 
-
         const data =
             await apiCall(
                 '/candidates?' +
                 params.toString()
             );
 
-
         const candidates =
             data.items || [];
-
 
         const headers = [
 
@@ -2684,7 +2202,6 @@ async function exportData(
 
         ];
 
-
         const csvRows = [
 
             headers.join(','),
@@ -2700,7 +2217,6 @@ async function exportData(
                                     candidate[header] ??
                                     '';
 
-
                                 return JSON.stringify(
                                     value
                                 );
@@ -2709,7 +2225,6 @@ async function exportData(
                         .join(',')
             )
         ];
-
 
         const blob =
             new Blob(
@@ -2722,44 +2237,35 @@ async function exportData(
                 }
             );
 
-
         const url =
             URL.createObjectURL(
                 blob
             );
-
 
         const link =
             document.createElement(
                 'a'
             );
 
-
         link.href =
             url;
-
 
         link.download =
             all
                 ? 'all_candidates.csv'
                 : 'filtered_candidates.csv';
 
-
         document.body.appendChild(
             link
         );
 
-
         link.click();
 
-
         link.remove();
-
 
         URL.revokeObjectURL(
             url
         );
-
 
         console.log(
             `✅ Exported ${candidates.length} candidates`
@@ -2772,17 +2278,11 @@ async function exportData(
             error
         );
 
-
         alert(
             `Export failed: ${error.message}`
         );
     }
 }
-
-
-// ============================================================
-// ANALYTICS
-// ============================================================
 
 async function loadAnalytics() {
 
@@ -2793,49 +2293,40 @@ async function loadAnalytics() {
                 false
             );
 
-
         const data =
             await apiCall(
                 '/analytics?' +
                 params.toString()
             );
 
-
         console.log(
             '📊 Analytics data:',
             data
         );
 
-
         updateAnalyticsSummary(
             data.summary || {}
         );
-
 
         updateHireRatioChart(
             data.by_role || []
         );
 
-
         updateAvgSalaryChart(
             data.salaries || []
         );
-
 
         updateTopSkillsChart(
             data.skills || []
         );
 
-
         updateScoreDecisionChart(
             data.score_decisions || []
         );
 
-
         updateExperienceChart(
             data.experience || []
         );
-
 
         return data;
 
@@ -2845,7 +2336,6 @@ async function loadAnalytics() {
             '❌ Failed to load analytics:',
             error
         );
-
 
         const chartIds = [
 
@@ -2857,7 +2347,6 @@ async function loadAnalytics() {
 
         ];
 
-
         chartIds.forEach(
             id => {
 
@@ -2865,7 +2354,6 @@ async function loadAnalytics() {
                     document.getElementById(
                         id
                     );
-
 
                 if (element) {
 
@@ -2886,15 +2374,9 @@ async function loadAnalytics() {
             }
         );
 
-
         return {};
     }
 }
-
-
-// ============================================================
-// ANALYTICS SUMMARY
-// ============================================================
 
 function updateAnalyticsSummary(
     summary
@@ -2915,7 +2397,6 @@ function updateAnalyticsSummary(
             0
     };
 
-
     Object.entries(values)
         .forEach(
             ([id, value]) => {
@@ -2924,7 +2405,6 @@ function updateAnalyticsSummary(
                     document.getElementById(
                         id
                     );
-
 
                 if (element) {
 
@@ -2936,11 +2416,6 @@ function updateAnalyticsSummary(
             }
         );
 }
-
-
-// ============================================================
-// EMPTY CHART STATE
-// ============================================================
 
 function renderEmpty(element) {
 
@@ -2961,26 +2436,18 @@ function renderEmpty(element) {
     `;
 }
 
-
-// ============================================================
-// HIRE VS REJECT CHART
-// ============================================================
-
 function updateHireRatioChart(data) {
 
     const chartElement =
         $('#hireRatioChart');
-
 
     if (!chartElement) {
 
         return;
     }
 
-
     chartElement.innerHTML =
         '';
-
 
     if (
         !Array.isArray(data) ||
@@ -2994,7 +2461,6 @@ function updateHireRatioChart(data) {
         return;
     }
 
-
     const maxCandidates =
         Math.max(
             ...data.map(
@@ -3006,16 +2472,13 @@ function updateHireRatioChart(data) {
             1
         );
 
-
     const container =
         document.createElement(
             'div'
         );
 
-
     container.className =
         'horizontal-chart';
-
 
     data.forEach(
         item => {
@@ -3025,12 +2488,10 @@ function updateHireRatioChart(data) {
                     item.candidates
                 ) || 0;
 
-
             const hires =
                 Number(
                     item.hires
                 ) || 0;
-
 
             const rejects =
                 Number(
@@ -3041,7 +2502,6 @@ function updateHireRatioChart(data) {
                     candidates - hires
                 );
 
-
             const hireRate =
                 candidates
                     ? Math.round(
@@ -3051,16 +2511,13 @@ function updateHireRatioChart(data) {
                     )
                     : 0;
 
-
             const row =
                 document.createElement(
                     'div'
                 );
 
-
             row.className =
                 'metric-row';
-
 
             const candidateWidth =
                 candidates
@@ -3069,7 +2526,6 @@ function updateHireRatioChart(data) {
                         maxCandidates
                     ) * 100
                     : 0;
-
 
             row.innerHTML = `
 
@@ -3087,7 +2543,6 @@ function updateHireRatioChart(data) {
 
                 </div>
 
-
                 <div class="metric-track">
 
                     <div
@@ -3101,7 +2556,6 @@ function updateHireRatioChart(data) {
                             ${hires} Hires
                         </span>
                     </div>
-
 
                     <div
                         class="metric-reject"
@@ -3129,39 +2583,29 @@ function updateHireRatioChart(data) {
                 </div>
             `;
 
-
             container.appendChild(
                 row
             );
         }
     );
 
-
     chartElement.appendChild(
         container
     );
 }
-
-
-// ============================================================
-// AVERAGE SALARY CHART
-// ============================================================
 
 function updateAvgSalaryChart(data) {
 
     const chartElement =
         $('#avgSalaryChart');
 
-
     if (!chartElement) {
 
         return;
     }
 
-
     chartElement.innerHTML =
         '';
-
 
     if (
         !Array.isArray(data) ||
@@ -3175,7 +2619,6 @@ function updateAvgSalaryChart(data) {
         return;
     }
 
-
     const maxSalary =
         Math.max(
             ...data.map(
@@ -3187,16 +2630,13 @@ function updateAvgSalaryChart(data) {
             1
         );
 
-
     const container =
         document.createElement(
             'div'
         );
 
-
     container.className =
         'horizontal-chart';
-
 
     data.forEach(
         item => {
@@ -3206,16 +2646,13 @@ function updateAvgSalaryChart(data) {
                     item.average_salary
                 ) || 0;
 
-
             const row =
                 document.createElement(
                     'div'
                 );
 
-
             row.className =
                 'metric-row salary-row';
-
 
             const percentage =
                 salary
@@ -3224,7 +2661,6 @@ function updateAvgSalaryChart(data) {
                         maxSalary
                     ) * 100
                     : 0;
-
 
             row.innerHTML = `
 
@@ -3241,7 +2677,6 @@ function updateAvgSalaryChart(data) {
                     </span>
 
                 </div>
-
 
                 <div
                     class="metric-track salary-track"
@@ -3260,39 +2695,29 @@ function updateAvgSalaryChart(data) {
 
             `;
 
-
             container.appendChild(
                 row
             );
         }
     );
 
-
     chartElement.appendChild(
         container
     );
 }
-
-
-// ============================================================
-// TOP SKILLS CHART
-// ============================================================
 
 function updateTopSkillsChart(data) {
 
     const chartElement =
         $('#topSkillsChart');
 
-
     if (!chartElement) {
 
         return;
     }
 
-
     chartElement.innerHTML =
         '';
-
 
     if (
         !Array.isArray(data) ||
@@ -3306,9 +2731,7 @@ function updateTopSkillsChart(data) {
         return;
     }
 
-
     const skillsByRole = {};
-
 
     data.forEach(
         item => {
@@ -3316,7 +2739,6 @@ function updateTopSkillsChart(data) {
             const role =
                 item.Job_Role ||
                 'Other';
-
 
             if (
                 !skillsByRole[role]
@@ -3326,23 +2748,19 @@ function updateTopSkillsChart(data) {
                     [];
             }
 
-
             skillsByRole[role].push(
                 item
             );
         }
     );
 
-
     const container =
         document.createElement(
             'div'
         );
 
-
     container.className =
         'skills-dashboard';
-
 
     Object.entries(
         skillsByRole
@@ -3361,16 +2779,13 @@ function updateTopSkillsChart(data) {
                     )
             );
 
-
             const roleGroup =
                 document.createElement(
                     'div'
                 );
 
-
             roleGroup.className =
                 'role-skills';
-
 
             roleGroup.innerHTML = `
 
@@ -3380,16 +2795,13 @@ function updateTopSkillsChart(data) {
 
             `;
 
-
             const skillList =
                 document.createElement(
                     'div'
                 );
 
-
             skillList.className =
                 'skills-list';
-
 
             skills
                 .slice(0, 5)
@@ -3401,10 +2813,8 @@ function updateTopSkillsChart(data) {
                                 'span'
                             );
 
-
                         tag.className =
                             'skill-tag';
-
 
                         tag.innerHTML = `
 
@@ -3421,18 +2831,15 @@ function updateTopSkillsChart(data) {
 
                         `;
 
-
                         skillList.appendChild(
                             tag
                         );
                     }
                 );
 
-
             roleGroup.appendChild(
                 skillList
             );
-
 
             container.appendChild(
                 roleGroup
@@ -3440,16 +2847,10 @@ function updateTopSkillsChart(data) {
         }
     );
 
-
     chartElement.appendChild(
         container
     );
 }
-
-
-// ============================================================
-// AI SCORE DISTRIBUTION
-// ============================================================
 
 function updateScoreDecisionChart(
     data
@@ -3458,16 +2859,13 @@ function updateScoreDecisionChart(
     const chartElement =
         $('#scoreDecisionChart');
 
-
     if (!chartElement) {
 
         return;
     }
 
-
     chartElement.innerHTML =
         '';
-
 
     if (
         !Array.isArray(data) ||
@@ -3480,7 +2878,6 @@ function updateScoreDecisionChart(
 
         return;
     }
-
 
     const total =
         data.reduce(
@@ -3497,7 +2894,6 @@ function updateScoreDecisionChart(
             0
         );
 
-
     if (!total) {
 
         renderEmpty(
@@ -3507,16 +2903,13 @@ function updateScoreDecisionChart(
         return;
     }
 
-
     const container =
         document.createElement(
             'div'
         );
 
-
     container.className =
         'score-distribution';
-
 
     data.forEach(
         item => {
@@ -3527,17 +2920,14 @@ function updateScoreDecisionChart(
                     0
                 );
 
-
             const rejects =
                 Number(
                     item.rejects ||
                     0
                 );
 
-
             const count =
                 hires + rejects;
-
 
             const percentage =
                 Math.round(
@@ -3547,16 +2937,13 @@ function updateScoreDecisionChart(
                     ) * 100
                 );
 
-
             const row =
                 document.createElement(
                     'div'
                 );
 
-
             row.className =
                 'score-row';
-
 
             row.innerHTML = `
 
@@ -3577,40 +2964,29 @@ function updateScoreDecisionChart(
 
                 </div>
 
-
-                <div class="score-bar-track">
+                <div class="score-track">
 
                     <div
-                        class="score-bar"
-                        style="width:${Math.max(
-                            2,
-                            percentage
-                        )}%"
+                        class="score-fill"
+                        style="width:${percentage}%"
                     >
                     </div>
 
                 </div>
 
-
                 <div class="score-row-meta">
 
-                    <span
-                        class="legend-dot hire-dot"
-                    ></span>
+                    <span>
+                        ${hires} Hires
+                    </span>
 
-                    ${hires} hires
-
-
-                    <span
-                        class="legend-dot reject-dot"
-                    ></span>
-
-                    ${rejects} rejects
+                    <span>
+                        ${rejects} Rejects
+                    </span>
 
                 </div>
 
             `;
-
 
             container.appendChild(
                 row
@@ -3618,32 +2994,23 @@ function updateScoreDecisionChart(
         }
     );
 
-
     chartElement.appendChild(
         container
     );
 }
-
-
-// ============================================================
-// EXPERIENCE DISTRIBUTION
-// ============================================================
 
 function updateExperienceChart(data) {
 
     const chartElement =
         $('#experienceChart');
 
-
     if (!chartElement) {
 
         return;
     }
 
-
     chartElement.innerHTML =
         '';
-
 
     if (
         !Array.isArray(data) ||
@@ -3657,8 +3024,7 @@ function updateExperienceChart(data) {
         return;
     }
 
-
-    const maxCount =
+    const maxCandidates =
         Math.max(
             ...data.map(
                 item =>
@@ -3669,82 +3035,107 @@ function updateExperienceChart(data) {
             1
         );
 
-
     const container =
         document.createElement(
             'div'
         );
 
-
     container.className =
-        'experience-chart';
-
+        'horizontal-chart';
 
     data.forEach(
         item => {
 
-            const years =
-                Number(
-                    item.Experience_Years
-                ) || 0;
-
-
-            const count =
+            const candidates =
                 Number(
                     item.candidates
                 ) || 0;
 
+            const hires =
+                Number(
+                    item.hires
+                ) || 0;
+
+            const rejects =
+                Number(
+                    item.rejects
+                ) ||
+                Math.max(
+                    0,
+                    candidates - hires
+                );
 
             const row =
                 document.createElement(
                     'div'
                 );
 
-
             row.className =
-                'experience-row';
+                'metric-row';
 
-
-            const height =
-                count
+            const candidateWidth =
+                candidates
                     ? (
-                        count /
-                        maxCount
+                        candidates /
+                        maxCandidates
                     ) * 100
-                    : 5;
-
+                    : 0;
 
             row.innerHTML = `
 
-                <div class="experience-label">
+                <div class="metric-row-head">
 
-                    ${years}
+                    <strong>
+                        ${escapeHTML(
+                            item.experience_band
+                        )}
+                    </strong>
 
-                    yr${years === 1 ? '' : 's'}
+                    <span>
+                        ${candidates} candidates
+                    </span>
 
                 </div>
 
-
-                <div class="experience-track">
+                <div class="metric-track">
 
                     <div
-                        class="experience-fill"
-                        style="height:${Math.max(
-                            5,
-                            height
+                        class="metric-fill hire"
+                        style="width:${Math.max(
+                            4,
+                            candidateWidth
+                        )}%"
+                    >
+                        <span>
+                            ${hires} Hires
+                        </span>
+                    </div>
+
+                    <div
+                        class="metric-reject"
+                        style="width:${Math.max(
+                            0,
+                            candidateWidth *
+                            (
+                                rejects /
+                                Math.max(
+                                    candidates,
+                                    1
+                                )
+                            )
                         )}%"
                     >
 
-                        <span>
-                            ${count}
-                        </span>
+                        ${
+                            rejects
+                                ? `<span>${rejects} Rejects</span>`
+                                : ''
+                        }
 
                     </div>
 
                 </div>
-
             `;
-
 
             container.appendChild(
                 row
@@ -3752,55 +3143,17 @@ function updateExperienceChart(data) {
         }
     );
 
-
     chartElement.appendChild(
         container
     );
 }
 
+document.addEventListener(
+    'DOMContentLoaded',
+    () => {
 
-// ============================================================
-// APPLICATION INITIALIZATION
-// ============================================================
+        setupAuthentication();
 
-async function initialize() {
-
-    console.log(
-        '🚀 Initializing application...'
-    );
-
-
-    /*
-     * Authentication is initialized first.
-     *
-     * The dashboard is loaded ONLY after:
-     *
-     * 1. A user logs in successfully, OR
-     * 2. An existing valid session is found.
-     */
-
-    setupAuthentication();
-
-
-    await checkAuthentication();
-}
-
-
-// ============================================================
-// START APPLICATION
-// ============================================================
-
-if (
-    document.readyState ===
-    'loading'
-) {
-
-    document.addEventListener(
-        'DOMContentLoaded',
-        initialize
-    );
-
-} else {
-
-    initialize();
-}
+        checkAuthentication();
+    }
+);
