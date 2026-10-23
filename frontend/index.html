@@ -4,23 +4,25 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>AI Resume Screening Dashboard</title>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
     <div id="authScreen" class="auth-screen">
-        <div class="auth-panel">
-            <div class="auth-heading">
-                <h1>Resume Screening</h1>
-                <p>Sign in to continue.</p>
-            </div>
+        <div class="auth-brand">resume<span>AI</span></div>
+        <div class="auth-layout">
+            <div class="auth-panel">
+                <div class="auth-heading">
+                    <span class="auth-kicker">SMARTER HIRING</span>
+                    <h1>Welcome to ResumeAI</h1>
+                    <p>Screen candidates faster with data-backed AI insights.</p>
+                </div>
 
-            <div class="auth-tabs" role="tablist" aria-label="Authentication">
-                <button type="button" id="loginTab" class="auth-tab active">Login</button>
-                <button type="button" id="registerTab" class="auth-tab">Register</button>
-            </div>
+                <div class="auth-tabs" role="tablist" aria-label="Authentication">
+                    <button type="button" id="loginTab" class="auth-tab active">Login</button>
+                    <button type="button" id="registerTab" class="auth-tab">Register</button>
+                </div>
 
-            <form id="loginForm" class="auth-form">
+                <form id="loginForm" class="auth-form">
                 <div class="auth-field">
                     <label for="loginEmail">Email</label>
                     <input type="email" id="loginEmail" autocomplete="email" required>
@@ -58,6 +60,28 @@
             </form>
 
             <div id="authMessage" class="auth-message" role="alert"></div>
+
+                <p class="auth-legal">By continuing, you agree to our <a href="#">Terms of use</a> and <a href="#">Privacy Policy</a>.</p>
+            </div>
+
+            <aside class="auth-hero" aria-hidden="true">
+                <div class="code-pattern">&lt;/&gt; &nbsp; { } &nbsp; ( ) &nbsp; =&gt; &nbsp; [] &nbsp; &lt;/&gt;</div>
+                <div class="hero-copy">
+                    <span class="hero-pill">AI-POWERED SCREENING</span>
+                    <h2>Work smarter.<br><span>Hire better.</span></h2>
+                    <p>Turn resumes into clear, explainable candidate insights.</p>
+                </div>
+                <div class="hero-orbit">
+                    <div class="orbit-ring ring-one"></div>
+                    <div class="orbit-ring ring-two"></div>
+                    <div class="orbit-core">AI</div>
+                    <i class="orbit-dot dot-one"></i>
+                    <i class="orbit-dot dot-two"></i>
+                    <i class="orbit-dot dot-three"></i>
+                    <i class="orbit-dot dot-four"></i>
+                </div>
+                <div class="hero-footer">Candidate pool&nbsp;&nbsp; • &nbsp;&nbsp;Analytics&nbsp;&nbsp; • &nbsp;&nbsp;Live screening</div>
+            </aside>
         </div>
     </div>
 
